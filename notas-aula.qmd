@@ -95,3 +95,13 @@ Entretanto, o modelo linear tem algumas vantagens em termos de infência, e em t
 ### Seleção do hiperparametro de penalização $\lambda$
 
 ## Regressão
+
+## Referências {.unnumbered}
+
+- Izbicki, R., & dos Santos, T. M. (2020). _Aprendizado de máquina: uma abordagem estatística_. 
+
+- Morettin, P. A., & Singer, J. M. (2020). _Introdução à Ciência de Dados: Fundamentos e Aplicações_.
+
+- Hastie, T., Tibshirani, R.,, Friedman, J. (2009). _The Elements of Statistical Learning_.
+
+- James, G., Witten, D., Hastie, T., & Tibshirani, R. (2021). _An introduction to statistical learning_.
