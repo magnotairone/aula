@@ -1,0 +1,97 @@
+---
+title: "Aula 2 - Modelos lineares com regularização para regressão"
+author: "Magno Severino"
+format: html
+title-block-banner: "#002060"
+lang: pt
+editor_options: 
+  chunk_output_type: console
+execute:
+  warning: false
+  message: false
+---
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+library(tidyverse)
+library(kableExtra)
+library(keras) # rede neural
+library(Metrics) # calculo de metricas
+library(Matrix) # representacao de matriz esparca
+
+tema <- theme_classic() +
+  theme(
+    text = element_text(size = 14),
+    axis.text = element_text(size = 14),
+    axis.title = element_text(size = 14),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 14)
+  )
+
+theme_set(tema)
+
+cores <- RColorBrewer::brewer.pal(5, "Dark2")
+```
+
+## Objetivos de aprendizagem
+
+## Motivação
+
+## Modelo Regressão linear
+
+Considere que observamos o par $(x_i, y_i),$ em que $x_i \in \mathbb R^p,$ para $i \in \{1, \dots, n\}$ e $0 < p \in \mathbb N$ e há uma crença de que exista uma relação linear entre as preditoras e a variável resposta.
+
+A regressão linear utiliza uma forma linear para a função de predição, ou seja, a função de predição usada pode ser escrita como
+
+$$
+f(x) = \beta^T x = \beta_0 x_0 + \sum_{i=1}^{^p}\beta_i x_i,
+$$
+em que adotamos a convenção $x_0 \equiv 1$, e onde $\beta = (\beta_0, \ldots, \beta_d)$. 
+Note que $x_i$ não é necessariamente a $i$-ésima variável original; podemos criar novas covariáveis que são funções das originais (ex: $x_i^2, x_i x_j,$ etc).
+
+Uma forma de estimar os coeficientes $\beta$ da regressão linear é utilizando o método dos mínimos quadrados, isto é,
+
+$$
+\beta = \arg \min \sum_{i=1}^n \Big(Y_i - \beta_0 - \sum_{j=1}^{p}\beta_j x_{ij}\Big)^2.
+$$
+
+A solução para este problema é dada por
+
+$$
+\beta = (\beta_0, \beta_1, \dots, \beta_d) = (X^T X)^{-1} X^T Y,
+$$
+
+em que
+
+$$
+X = \begin{pmatrix}
+X_{1,0} & \dots & X_{1,d} \\
+\vdots & \ddots & \vdots \\
+X_{n,0} & \dots & X_{n,d}
+\end{pmatrix}
+$$
+e $Y = (Y_1, \dots, Y_n)$ (aqui usamos a convenção de que um vetor, quando utilizado como matriz, é um vetor coluna).
+
+Assim, a função de regressão é estimada por
+
+$$
+g(x) = \hat\beta^T \mathbf x.
+$$
+
+O estimador de mínimos quadradados, quando há muitas covariáveis (isto é, $d$ é grande), possui baixo desempenho devido ao super-ajuste. 
+Há muitos parâmetros a serem estimados e, portanto, a função de regressão estimada possui baixo poder preditivo. 
+Em outras palavras, a variância do estimador resultante é alta pois muitos parâmetros devem ser estimados.
+Se $d > n$, o método de mínimos quadrados nem pode ser implementado, uma vez que $X^\prime X$ não é invertível!
+
+Entretanto, o modelo linear tem algumas vantagens em termos de infência, e em termos de problemas reais aplicados, em alguns casos, é competitivo em relação a métodos não lineares (como árvore de decisão binária, por exemplo).
+
+## Seleção de variáveis
+
+## Métodos de encolhimento (_shrinkage_)
+
+### Regressão Ridge
+
+### Regressão Ridge
+
+### Seleção do hiperparametro de penalização $\lambda$
+
+## Regressão
