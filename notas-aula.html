@@ -8,7 +8,7 @@
 
 <meta name="author" content="Magno Severino">
 
-<title>Aula 2 - Modelos lineares com regularização para regressão</title>
+<title>Modelos lineares com regularização para regressão</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -51,7 +51,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Aula 2 - Modelos lineares com regularização para regressão</h1>
+      <h1 class="title">Modelos lineares com regularização para regressão</h1>
                       </div>
   </div>
     
@@ -83,6 +83,9 @@ ul.task-list li input[type="checkbox"] {
 <section id="motivação" class="level2">
 <h2 class="anchored" data-anchor-id="motivação">Motivação</h2>
 </section>
+<section id="trade-off-entre-viés-e-variância" class="level2">
+<h2 class="anchored" data-anchor-id="trade-off-entre-viés-e-variância">Trade-off entre viés e variância</h2>
+</section>
 <section id="modelo-regressão-linear" class="level2">
 <h2 class="anchored" data-anchor-id="modelo-regressão-linear">Modelo Regressão linear</h2>
 <p>Considere que observamos o par <span class="math inline">\((x_i, y_i),\)</span> em que <span class="math inline">\(x_i \in \mathbb R^p,\)</span> para <span class="math inline">\(i \in \{1, \dots, n\}\)</span> e <span class="math inline">\(0 &lt; p \in \mathbb N\)</span> e há uma crença de que exista uma relação linear entre as preditoras e a variável resposta.</p>
@@ -98,7 +101,7 @@ f(x) = \beta^T x = \beta_0 x_0 + \sum_{i=1}^{^p}\beta_i x_i,
 <p><span class="math display">\[
 \beta = (\beta_0, \beta_1, \dots, \beta_d) = (X^T X)^{-1} X^T Y,
 \]</span></p>
-<p>em que</p>
+<p>em que <span class="math inline">\(X = (\mathbf x_1^T, \dots, \mathbf x_n^T)\)</span> é a matriz de especificação do modelo e <span class="math inline">\(\mathbf y = (y_1, \dots, y_n)^T\)</span></p>
 <p><span class="math display">\[
 X = \begin{pmatrix}
 X_{1,0} &amp; \dots &amp; X_{1,d} \\
@@ -112,17 +115,29 @@ g(x) = \hat\beta^T \mathbf x.
 \]</span></p>
 <p>O estimador de mínimos quadradados, quando há muitas covariáveis (isto é, <span class="math inline">\(d\)</span> é grande), possui baixo desempenho devido ao super-ajuste. Há muitos parâmetros a serem estimados e, portanto, a função de regressão estimada possui baixo poder preditivo. Em outras palavras, a variância do estimador resultante é alta pois muitos parâmetros devem ser estimados. Se <span class="math inline">\(d &gt; n\)</span>, o método de mínimos quadrados nem pode ser implementado, uma vez que <span class="math inline">\(X^\prime X\)</span> não é invertível!</p>
 <p>Entretanto, o modelo linear tem algumas vantagens em termos de infência, e em termos de problemas reais aplicados, em alguns casos, é competitivo em relação a métodos não lineares (como árvore de decisão binária, por exemplo).</p>
+<p>Na aula de hoje, vamos discutir formar de melhorar o modelo de regressão linear, superando algumas de suas limitações:</p>
+<ul>
+<li><p>Melhoria na acurácia de predição: sob a hipótese de que a verdadeira relação entre a resposta e as preditoras é aproximadamente linear, as estimativas de minimos quadrados tem viés baixo.</p>
+<ul>
+<li><p>Se <span class="math inline">\(n \gg p,\)</span> as estimativas de mínimos quadrados tendem a ter também baixa variância, performando bem em dados de teste.</p></li>
+<li><p>Se <span class="math inline">\(n\)</span> não for muito maior que <span class="math inline">\(p\)</span>, há o risco de variância alta no ajuste, resultado em overfitting. Resultado: baixo poder preditivo.</p></li>
+</ul></li>
+<li><p>Alternativa: limitar ou encolher (<em>shrinkking</em>) os coeficientes estimados para reduzir a variância, ao custo de aumentar um pouco o viés das estimativas. Isso pode levar a uma grande melhoria no poder preditivo do modelo.</p></li>
+</ul>
 </section>
 <section id="seleção-de-variáveis" class="level2">
 <h2 class="anchored" data-anchor-id="seleção-de-variáveis">Seleção de variáveis</h2>
+<p>Essa abordagem involve identificar um subconjunto das <span class="math inline">\(p\)</span> preditoras que acredita-se ter uma relação com a variável resposta. O modelo é ajustado então considerando este conjunto reduzido de preditoras. Problema: computacionalmente muito custoso.</p>
+<p>Alternativas: stepwise.</p>
 </section>
 <section id="métodos-de-encolhimento-shrinkage" class="level2">
 <h2 class="anchored" data-anchor-id="métodos-de-encolhimento-shrinkage">Métodos de encolhimento (<em>shrinkage</em>)</h2>
+<p>Como alternativa aos métodos de seleção de modelos convencionais, consideramos duas versões que buscam encolher as estimativas para próximo de zero. Ao fazer essa redução, reduzimos a variância dos modelos.</p>
 <section id="regressão-ridge" class="level3">
 <h3 class="anchored" data-anchor-id="regressão-ridge">Regressão Ridge</h3>
 </section>
-<section id="regressão-ridge-1" class="level3">
-<h3 class="anchored" data-anchor-id="regressão-ridge-1">Regressão Ridge</h3>
+<section id="regressão-lasso" class="level3">
+<h3 class="anchored" data-anchor-id="regressão-lasso">Regressão Lasso</h3>
 </section>
 <section id="seleção-do-hiperparametro-de-penalização-lambda" class="level3">
 <h3 class="anchored" data-anchor-id="seleção-do-hiperparametro-de-penalização-lambda">Seleção do hiperparametro de penalização <span class="math inline">\(\lambda\)</span></h3>

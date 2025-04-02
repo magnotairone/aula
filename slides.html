@@ -10,7 +10,8 @@
 <link href="slides_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.3.433">
 
-  <title>Aula</title>
+  <meta name="author" content="Magno Severino">
+  <title>Modelos lineares com regularização para regressão</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -30,6 +31,7 @@
     }
   </style>
   <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto.css">
+  <link rel="stylesheet" href="style_slides.css">
   <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -323,37 +325,323 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" class="quarto-title-block center">
-  <h1 class="title">Aula</h1>
+<section id="title-slide" data-background-color="#002060" data-visibility="hidden" class="quarto-title-block center">
+  <h1 class="title">Modelos lineares com regularização para regressão</h1>
 
 <div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Magno Severino 
+</div>
+</div>
 </div>
 
 </section>
-<section id="quarto" class="slide level2">
-<h2>Quarto</h2>
-<p>Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <a href="https://quarto.org/docs/presentations/" class="uri">https://quarto.org/docs/presentations/</a>.</p>
+<section>
+<section id="modelos-lineares-com-regularização-para-regressão" class="title-slide slide level1 center" data-background-color="#002060">
+<h1>Modelos lineares com regularização para regressão</h1>
+<p><strong>Magno Severino</strong></p>
 </section>
-<section id="bullets" class="slide level2">
-<h2>Bullets</h2>
-<p>When you click the <strong>Render</strong> button a document will be generated that includes:</p>
+<section id="objetivos-de-aprendizagem" class="slide level2">
+<h2>Objetivos de aprendizagem</h2>
+<!-- ## Motivação (COLOCAR MEU EXEMPLO) -->
+<!-- Considere que o objetivo é ajustar um modelo de regressão polinomial a um conjunto de 10 pontos gerados por meio da -->
+<!-- expressão $y_i = sen(2\pi x_i)+e_i$, em que $e_i~N(0, \sigma^2.$ -->
+<!-- Os dados estão representados na abaixo por pontos em azul.  -->
+<!-- A curva verde corresponde a $y_i = sen(2\pi x_i)$; em vermelho estão representados os ajustes baseados em regressões polinomiais de graus, 0, 1, 3 e 9. -->
+<!-- ```{r fig.height=4, fig.align='center'} -->
+<!-- knitr::include_graphics("figura11.1.png") -->
+<!-- ``` -->
+<!-- ::: footer -->
+<!-- Figura do livro Morettin, Pedro A., and Julio M. Singer. "Introduçao a Ciência de Dados." Introdução à Ciência de Dados: Fundamentos e Aplicações (2020). -->
+<!-- ::: -->
+</section>
+<section id="motivação" class="slide level2">
+<h2>Motivação</h2>
+<p>Suponha que queremos estimar a função que relaciona o total de anos de estudo (<span class="math inline">\(X\)</span>) de uma pessoa com o seu salário anual (<span class="math inline">\(Y\)</span>).</p>
+<p>Assuma que o <strong>modelo verdadeiro</strong> que relaciona anos de estudo (<span class="math inline">\(X\)</span>) e salário (<span class="math inline">\(Y\)</span>) seja: <span class="math display">\[
+Y = g(X) + \varepsilon,
+\]</span> onde:</p>
 <ul>
-<li>Content authored with markdown</li>
-<li>Output from executable code</li>
+<li><span class="math inline">\(g(X) = 45 \tanh(x/1.9-7)+57\)</span>,</li>
+<li><span class="math inline">\(\varepsilon\sim N(0, \sigma^2).\)</span></li>
+</ul>
+<p>Foram geradas 100 amostras de tamanho <span class="math inline">\(n=30\)</span> e foram ajustados modelos polinomiais de diferentes graus.</p>
+</section>
+<section id="motivação-1" class="slide level2">
+<h2>Motivação</h2>
+<p>Comparativo de modelos com polinômios de diferentes graus estimados em 100 amostras diferentes.</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<p><img data-src="g1.gif"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<p><img data-src="g2_grau1.gif"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<p><img data-src="g4_grau10.gif"></p>
+</div>
+</div>
+</div>
+<!-- ![](g3_grau7.gif)  -->
+</section>
+<section id="motivação-2" class="slide level2">
+<h2>Motivação</h2>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-4-1.png" style="width:100.0%" class="r-stretch"><p>Comparativo de modelos com polinômios de diferentes graus. O ponto azul é a média das 100 estimativas feitas quando <span class="math inline">\(X = 11\)</span>.</p>
+</section>
+<section id="decomposição-do-erro-redutível" class="slide level2">
+<h2>Decomposição do erro redutível</h2>
+<p>Lembre-se que a parcela redutível do erro de predição esperado admite a seguinte decomposição</p>
+<p><span class="math display">\[\begin{align}
+  \text{EQM}[\hat{g}(x)] &amp;= E[(\hat g(x)-g(x))^2]\\
+  &amp;= \text{Viés}^2[\hat{g}(x)] +    \text{Var}[\hat{g}(x)],
+\end{align}\]</span></p>
+<p>em que o víes e a variância condicionados em <span class="math inline">\(X=x\)</span> são dados por</p>
+<p><span class="math display">\[
+\text{Viés}[\hat{g}(x)] = \text{E}[\hat{g}(x)] - g(x)
+\]</span> e <span class="math display">\[
+\text{Var}[\hat{g}(x)] = \text{E}\left[(\hat{g}(x) - \text{E}[\hat{g}(x)])^2\right].
+\]</span></p>
+</section>
+<section id="trade-off-entre-viés-e-variância" class="slide level2">
+<h2>Trade-off entre viés e variância</h2>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"></section>
+<section id="modelo-de-regressão-linear" class="slide level2">
+<h2>Modelo de regressão linear</h2>
+<p>Relembre o modelo de regressão linear</p>
+<p><span class="math display">\[y_i = \beta_0 + \beta_1x_{i1} + \cdots + \beta_px_{ip} + \epsilon.\]</span></p>
+<p>O objetivo é encontrar <span class="math inline">\(\mathbf\beta^T = (\beta_0, \beta_1, \dots, \beta_p)\)</span> que minimiza <!-- $$ --> <!-- \sum_{i=1}^{n}\Big(y_i - \beta^T\mathbf x_i\Big)^2 --> <!-- $$ --> <span class="math display">\[
+\sum_{i=1}^{n}\Big(y_i - \beta_0 -\sum_{j=1}^p \beta_jx_{ij}\Big)^2
+\]</span></p>
+<p>para <span class="math inline">\(\mathbf x_i = (1, x_1, \dots, x_p).\)</span></p>
+<p>A estimativa de mínimos quadrados é dada por <span class="math display">\[
+\hat\beta = (\beta_0, \beta_1, \dots, \beta_d) = (\mathbf X^T \mathbf X)^{-1} \mathbf X^T \mathbf y,
+\]</span></p>
+<p>em que <span class="math inline">\(X = (\mathbf x_1^T, \dots, \mathbf x_n^T)\)</span> é a matriz de especificação do modelo e <span class="math inline">\(\mathbf y = (y_1, \dots, y_n)^T.\)</span></p>
+</section></section>
+<section>
+<section id="apesar-de-sua-simplicidade-o-modelo-linear-tem-vantagens-em-termos-de-interpretabilidade-e-frequentemente-apresenta-um-bom-desempenho-preditivo." class="title-slide slide level1 center">
+<h1>Apesar de sua simplicidade, o modelo linear tem vantagens em termos de <em>interpretabilidade</em> e frequentemente apresenta um bom <em>desempenho preditivo</em>.</h1>
+
+</section>
+<section id="seleção-de-variáveis" class="slide level2">
+<h2>Seleção de variáveis</h2>
+<p>Possíveis alternativas para remover variáveis irrelevantes de um modelo de RLM, de modo a obter maior interpretabilidade</p>
+<ul>
+<li><p><strong>Seleção de subconjuntos de variáveis</strong> (<em>subset selection</em>): melhor subconjunto, stepwise (forward e backward), uso de critérios de informação (AIC, BIC, <span class="math inline">\(R^2\)</span> ajustado).</p></li>
+<li><p><strong>Redução da dimensão</strong>: projetar os preditores sobre um subespaço de dimensão menor <span class="math inline">\(q &lt; p\)</span>, que consiste em obter combinações lineares (ou projeções) dos preditores.</p></li>
+<li><p><strong>Regularização ou encolhimento</strong> (<em>shrinkage</em>): usa todos os preditores mas os coeficentes são encolhidos para zero; pode funcionar para selecionar variáveis. Reduz variância.</p></li>
 </ul>
 </section>
-<section id="code" class="slide level2">
-<h2>Code</h2>
-<p>When you click the <strong>Render</strong> button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:</p>
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<section id="regularização" class="slide level2">
+<h2>Regularização</h2>
+<ul>
+<li><p><em>Regularização</em> refere-se a um conjunto de técnicas utilizadas para especificar modelos que se ajustem a um conjunto de dados <strong>evitando o sobreajuste</strong> (overfitting).</p></li>
+<li><p>Nessas técnicas, a função de perda contém um termo de penalização cuja finalidade é reduzir (encolher) a influência de preditoras irrelevantes.</p></li>
+<li><p>Pode não ser óbvio inicialmente como essa encolha nos coeficientes possa melhorar o ajuste, mas essa técnica busca reduzir a variância das estimativas.</p></li>
+</ul>
+</section>
+<section id="regressão-ridge" class="slide level2 smaller">
+<h2>Regressão Ridge</h2>
+<ul>
+<li><p>Proposta por Hoerl e Kennard (1970) para tratar do problema da multicolinearidade mas também pode ser utilizada para corrigir problemas ligados ao sobreajuste.</p></li>
+<li><p>A regressão Ridge é bastante similar à regressão linear, porém leva em conta um termo de regularização na função de perda. Assim, <span class="math display">\[
+\hat{\beta}_{\ell_2,\lambda} = \operatorname*{arg\,min}_{\beta} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij} \right)^2 + \lambda \sum_{j=1}^{p} \beta_j^2
+\]</span> em que <span class="math inline">\(\ell_2\)</span> indica o fato de que estamos medindo a complexidade de um vetor <span class="math inline">\(\beta\)</span> usando sua norma em <span class="math inline">\(\ell_2\)</span>, <span class="math inline">\(||\beta||_{2}^2 = \sum_{j=1}^{p} \beta_j^2\)</span>.</p></li>
+<li><p>Dizemos que <span class="math inline">\(\hat{\beta}_{\ell_2,\lambda}\)</span> é o <strong>estimador Ridge</strong>.</p></li>
+<li><p>Aqui, <span class="math inline">\(\lambda\)</span> é um hiperparâmetro que controla o impacto da regularização nos coeficientes.</p></li>
+<li><p>O que acontece quando <span class="math inline">\(\lambda = 0?\)</span></p></li>
+<li><p>E quando <span class="math inline">\(\lambda = \infty?\)</span></p></li>
+<li><p>A escolha de <span class="math inline">\(\lambda\)</span> é critica!</p></li>
+<li><p>Note que <span class="math inline">\(\beta_0\)</span> <strong>não</strong> é regularizado.</p></li>
+</ul>
+</section>
+<section id="regressão-ridge-1" class="slide level2">
+<h2>Regressão Ridge</h2>
+<p>Pode-se mostrar que para cada <span class="math inline">\(\lambda \geq 0,\)</span> existe <span class="math inline">\(s\geq 0\)</span> tal que <span class="math display">\[
+\hat{\beta}_{\ell_2,\lambda} = \operatorname*{arg\,min}_{\beta} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij} \right)^2 + \lambda \sum_{j=1}^{p} \beta_j^2
+\]</span></p>
+<p>é equivalente a</p>
+<p><span class="math display">\[\operatorname*{arg\,min}_{\beta} \Bigg\{ \sum_{i=1}^{n}\bigg(y_i - \beta_0 - \sum_{j=1}^p \beta_j x_{ij}\bigg)^2\Bigg\} \quad \text{sujeito a } \quad \sum_{j=1}^p \beta_j^2 \leq s.\]</span></p>
+<p>Isso evidencia mais uma vez que a penalização favorece coeficientes “pequenos” quando comparados à solução de mínimos quadrados.</p>
+</section>
+<section id="regressão-ridge-2" class="slide level2">
+<h2>Regressão Ridge</h2>
+<ul>
+<li><p>No método de mínimos quadrados, temos <span class="math inline">\(\mathcal G = \{g(x) = \beta^T\mathbf x, \beta \in \mathbb R^{p+1}\}.\)</span></p></li>
+<li><p>No Ridge, <span class="math inline">\(\mathcal G_{\ell_2} = \{g(x) = \beta_0+\beta^T\mathbf x, \beta \in \mathbb R^{p}, \|\beta\|_2^2 \leq s\}.\)</span></p></li>
+<li><p>Considere o caso em que <span class="math inline">\(Y = \beta_0 + \beta_1X_1\)</span>. Se <span class="math inline">\(s=4\)</span> então <span class="math inline">\(\vert \beta_1 \vert^2 \leq 4\)</span>.</p></li>
+</ul>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-6-1.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="regressão-ridge-3" class="slide level2">
+<h2>Regressão Ridge</h2>
+<ul>
+<li><p>No método de mínimos quadrados temos <span class="math inline">\(\mathcal G = \{g(x) = \beta^T\mathbf x, \beta \in \mathbb R^{p+1}\}.\)</span></p></li>
+<li><p>No Ridge, <span class="math inline">\(\mathcal G_{\ell_2} = \{g(x) = \beta_0+\beta^T\mathbf x, \beta \in \mathbb R^{p}, \|\beta\|_2^2 \leq s\}.\)</span></p></li>
+<li><p>Considere o caso em que <span class="math inline">\(Y = \beta_0 + \beta_1X_1\)</span>. Se <span class="math inline">\(s=4\)</span> então <span class="math inline">\(\vert \beta_1 \vert^2 \leq 4\)</span>.</p></li>
+</ul>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-7-1.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="regressão-ridge-4" class="slide level2">
+<h2>Regressão Ridge</h2>
+<ul>
+<li><p>No método de mínimos quadrados temos <span class="math inline">\(\mathcal G = \{g(x) = \beta^T\mathbf x, \beta \in \mathbb R^{p+1}\}.\)</span></p></li>
+<li><p>No Ridge, <span class="math inline">\(\mathcal G_{\ell_2} = \{g(x) = \beta_0+\beta^T\mathbf x, \beta \in \mathbb R^{p}, \|\beta\|_2^2 \leq s\}.\)</span></p></li>
+<li><p>Considere o caso em que <span class="math inline">\(Y = \beta_0 + \beta_1X_1\)</span>. Se <span class="math inline">\(s=4\)</span> então <span class="math inline">\(\vert \beta_1 \vert^2 \leq 4\)</span>.</p></li>
+</ul>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-8-1.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="regressão-ridge-5" class="slide level2">
+<h2>Regressão Ridge</h2>
+<ul>
+<li><p>No método de mínimos quadrados temos <span class="math inline">\(\mathcal G = \{g(x) = \beta^T\mathbf x, \beta \in \mathbb R^{p+1}\}.\)</span></p></li>
+<li><p>No Ridge, <span class="math inline">\(\mathcal G_{\ell_2} = \{g(x) = \beta_0+\beta^T\mathbf x, \beta \in \mathbb R^{p}, \|\beta\|_2^2 \leq s\}.\)</span></p></li>
+<li><p>Considere o caso em que <span class="math inline">\(Y = \beta_0 + \beta_1X_1\)</span>. Se <span class="math inline">\(s=4\)</span> então <span class="math inline">\(\vert \beta_1 \vert^2 \leq 4\)</span>.</p></li>
+</ul>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-9-1.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
+<section id="estimativas-ridge-vs-mínimos-quadrados" class="slide level2 smaller">
+<h2>Estimativas Ridge vs mínimos quadrados</h2>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"><p><span class="math display">\[
+\mathcal{G} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2\}, \qquad \mathcal{G}_{\ell_2} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2, |\beta_1|_2^2&lt;s\}.
+\]</span></p>
+</section>
+<section id="ridge-intuição" class="slide level2">
+<h2>Ridge: intuição</h2>
+<p>Considere o cenário em que temos duas preditoras <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span>.</p>
+<p><br></p>
+
+<img data-src="ridge.png" class="r-stretch"></section>
+<section id="ridge-trade-off-entre-viés-e-variância" class="slide level2">
+<h2>Ridge: trade-off entre viés e variância</h2>
+<p>Quando <span class="math inline">\(\lambda\)</span> cresce, a flexibilidade da regressão ridge diminui, levando à diminuição na variância e aumento do viés.</p>
+
+<img data-src="vies_var_ridge.png" class="r-stretch"><p>Viés ao quadrado (preto), variância (verde), erro quadrático médio de teste (roxo). Dados simulados, <span class="math inline">\(n=50\)</span>, <span class="math inline">\(p=45.\)</span></p>
+<div class="footer">
+<p>Figura do livro James, Gareth, et al.&nbsp;An introduction to statistical learning, 2021.</p>
 </div>
+</section>
+<section id="ridge-propriedades" class="slide level2">
+<h2>Ridge: propriedades</h2>
+<!-- <br> -->
+<!-- Solução de mínimos quadrados:  -->
+<!-- $$ -->
+<!-- \hat \beta = (\mathbf X^T \mathbf X)^{-1}\mathbf X^T \mathbf y. -->
+<!-- $$ -->
+<ul>
+<li><p>É possível mostrar que a solução de mínimos quadrados com penalidade ridge é: <span class="math display">\[
+\hat{\beta}_{\ell_2,\lambda} = (\mathbf X^T \mathbf X + \lambda I_0)^{-1}\mathbf X^T \mathbf y,
+\]</span> onde <span class="math inline">\(\mathbb{I}_0\)</span> é uma matriz identidade <span class="math inline">\((p+1) \times (p+1)\)</span> modificada de modo que <span class="math inline">\(\mathbb{I}_0(1,1) = 0.\)</span></p></li>
+<li><p>Apesar de não introduzir soluções com zeros, a regressão ridge <strong>diminui a variância</strong> dos estimadores da regressão.</p></li>
+<li><p>Em geral, o estimador Ridge não é consistente, pois a penalidade <span class="math inline">\(\ell_2\)</span> enviesa os coeficientes em direção a zero.</p></li>
+<li><p>A técnica Ridge não serve para seleção de modelos.</p></li>
+<li><p>A escolha do coeficiente de regularização <span class="math inline">\(\lambda\)</span> pode ser feita via validação cruzada.</p></li>
+<li><p>As estimativas Ridge <strong>não são</strong> invariantes à escala, como na regressão linear.</p></li>
+</ul>
+</section>
+<section id="regressão-lasso" class="slide level2 smaller">
+<h2>Regressão Lasso</h2>
+<ul>
+<li><p>Disvantagem do Ridge: não seleciona variáveis! Embora não seja um problema para acurácia das predições, cria um desafio para interpretação quando <span class="math inline">\(p\)</span> é grande.</p></li>
+<li><p>Desenvolvido por Tibshirani (1996).</p></li>
+<li><p>A regressão Lasso considera a norma <span class="math inline">\(\ell_1\)</span> como regularização.</p></li>
+<li><p>Formalmente, no Lasso, buscamos por</p></li>
+</ul>
+<p><span class="math display">\[
+\hat{\beta}_{\ell_1,\lambda} = \operatorname*{arg\,min}_{\beta} \sum_{i=1}^{n} \left( y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij} \right)^2 + \lambda \sum_{j=1}^{p} |\beta_j|.
+\]</span></p>
+<ul>
+<li>O que acontece quando <span class="math inline">\(\lambda = 0?\)</span> E quando <span class="math inline">\(\lambda = \infty?\)</span></li>
+</ul>
+<div class="fragment">
+<ul>
+<li><p>A norma <span class="math inline">\(\ell_1\)</span> força alguns coeficientes para zero quando <span class="math inline">\(\lambda\)</span> é grande o suficiente.</p></li>
+<li><p>Pode-se mostrar que para cada <span class="math inline">\(\lambda \geq 0,\)</span> existe <span class="math inline">\(s\geq 0\)</span> tal que minimizar a quantidade acima é equivalente a resolver</p></li>
+</ul>
+<p><span class="math display">\[\hat\beta_s = \operatorname*{arg\,min}_{\beta} \Bigg\{ \sum_{i=1}^{n}\bigg(y_i - \beta_0 - \sum_{j=1}^p \beta_j x_{ij}\bigg)^2\Bigg\} \quad \text{sujeito a } \quad \sum_{j=1}^p \vert\beta_j\vert \leq s.\]</span></p>
 </div>
+</section>
+<section id="lasso-intuição" class="slide level2">
+<h2>Lasso: intuição</h2>
+<p><br> Considere o cenário em que temos duas preditoras <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span>.</p>
+<p><br></p>
+
+<img data-src="lasso.png" class="r-stretch"></section>
+<section id="lasso-propriedades" class="slide level2">
+<h2>Lasso: propriedades</h2>
+<ul>
+<li><p>O estimador Lasso <strong>encolhe para zero</strong> os parâmetros que correspondem a preditores redundantes.</p></li>
+<li><p>O estimador Lasso é enviesado para parâmetros não nulos.</p></li>
+</ul>
+<!-- - É extremamente rápido calcular $\widehat{\beta}_{L_{1},\lambda}$ para todos os $\lambda$ simultaneamente. Diversos algoritmos foram desenvolvidos nos últimos anos para fazer esta tarefa, sendo o LARS um dos primeiros desses algoritmos. -->
+<ul>
+<li><p>A regressão Lasso não possui solução analítica no caso geral! Solução aproximada baseada em métodos de otimização convexa.</p></li>
+<li><p>Por ser um problema convexo, resolver o problema de otimização do Lasso é muito mais rápido que buscar pelo melhor subconjunto de covariáveis.</p></li>
+</ul>
+<!-- - A solução induzida pelo lasso possui muitos zeros (isto é, o vetor $\hat{\beta}_{\ell_1,\lambda}$ é esparso). -->
+<!-- ## Comparativo dos termos de regularização -->
+<!-- DECIDIR SE DEIXO ISSO -->
+<!-- $$\|\beta\|_{0} = \sum_{i=1}^{p} \mathbb{I} (\beta_i \neq 0) \qquad \|\beta\|_{1} = \sum_{j=1}^{p} |\beta_j| \qquad \|\beta\|_{2}^2 = {\sum_{j=1}^{p} \beta_j^2}$$ -->
+<!-- <br><br> -->
+<!-- | $\beta$                                            | $\|\beta\|_{0}$ | $\|\beta\|_{1}$ | $\|\beta\|_{2}^2$ | -->
+<!-- |-----------------------|-----------------|----------------|----------------| -->
+<!-- | (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)                     | 0               | 0               | 0.0               | -->
+<!-- | (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1) | 10              | 1               | 0.1               | -->
+<!-- | (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)                  | 10              | 10              | 10.0              | -->
+</section>
+<section id="comparativo-dos-lasso-e-ridge" class="slide level2">
+<h2>Comparativo dos Lasso e Ridge</h2>
+<p>Considere o cenário em que temos duas preditoras <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span>.</p>
+
+<img data-src="comparativo.png" class="r-stretch"><div class="footer">
+<p>Figura do livro James, Gareth, et al.&nbsp;An introduction to statistical learning, 2021.</p>
+</div>
+</section>
+<section id="elatic-net" class="slide level2">
+<h2>Elatic-net</h2>
+<ul>
+<li><p>A penalidade <em>elastic-net</em> foi introduzida por Zou e Hastie (2005) como um compromisso entre a regressão Ridge e o Lasso.</p></li>
+<li><p>Combina as penalidades <span class="math inline">\(\ell_1\)</span> e <span class="math inline">\(\ell_2\)</span>: seleciona variáveis como o Lasso e reduz os coeficientes de preditores correlacionados como a regressão Ridge</p></li>
+<li><p>A fórmula da penalidade elastic-net é dada por:</p></li>
+</ul>
+<p><span class="math display">\[
+\lambda\sum_{j=1}^{p}\big(\alpha\beta_{j}^{2}+(1-\alpha)|\beta_{j}|\big),
+\]</span> onde <span class="math inline">\(\lambda\)</span> controla a força da penalização e <span class="math inline">\(\alpha\)</span> é o parâmetro que equilibra a contribuição das penalidades <span class="math inline">\(L_1\)</span> e <span class="math inline">\(L_2\)</span>.</p>
+</section>
+<section id="elastic-net" class="slide level2">
+<h2>Elastic-net</h2>
+
+<img data-src="elastic-net.png" class="r-stretch"><div class="footer">
+<p>Figura do livro Morettin, Pedro A., and Julio M. Singer. “Introduçao a Ciência de Dados.” Introdução à Ciência de Dados: Fundamentos e Aplicações (2020).</p>
+</div>
+</section>
+<section id="escolha-do-hiperparametro-de-penalização-lambda" class="slide level2 smaller">
+<h2>Escolha do hiperparametro de penalização <span class="math inline">\(\lambda\)</span></h2>
+<ul>
+<li><p>A validação cruzada é um método para selecionar o parâmetro de regularização <span class="math inline">\(\lambda.\)</span></p></li>
+<li><p>Seja <span class="math inline">\(\mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i=1}^n\)</span> o conjunto de dados observados.</p></li>
+</ul>
+<p><br></p>
+<p><strong>Algoritmo</strong>:</p>
+<ol type="1">
+<li>Divide-se os dados em <span class="math inline">\(k\)</span> subconjuntos disjuntos <span class="math inline">\(\mathcal{D_1}, \dots, \mathcal{D_k}\)</span>.</li>
+<li>Para cada fold <span class="math inline">\(j\)</span>:
+<ul>
+<li><p>Treina-se o modelo nos <span class="math inline">\(k-1\)</span> folds restantes, ou seja, obtêm-se <span class="math inline">\(\beta_\lambda^{(-j)}\)</span>.</p></li>
+<li><p>Calcula-se o MSE no fold <span class="math inline">\(j\)</span>:</p>
+<p><span class="math display">\[\text{EQM}_j(\lambda) = \frac{1}{|\mathcal{D}_j|} \sum_{(\mathbf{x}_i, y_i) \in \mathcal{D}_j} \bigg(y_i - \mathbf{x}_i^\top \hat\beta_\lambda^{(-j)}\bigg)^2.\]</span></p></li>
+</ul></li>
+<li>O <span class="math inline">\(\lambda\)</span> ótimo (<span class="math inline">\(\lambda^*\)</span>) minimiza o EQM médio: <span class="math display">\[\lambda^* = \arg\min_{\lambda} \frac{1}{k} \sum_{j=1}^k \text{EQM}_j(\lambda).\]</span></li>
+</ol>
 <div class="footer footer-default">
 
 </div>
-</section>
+</section></section>
     </div>
   </div>
 
@@ -406,7 +694,7 @@
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -511,14 +799,14 @@
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'none',
+        transition: 'slide',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',
 
         // Transition style for full page slide backgrounds
         // (none/fade/slide/convex/concave/zoom)
-        backgroundTransition: 'none',
+        backgroundTransition: 'fade',
 
         // Number of slides away from the current that are visible
         viewDistance: 3,
@@ -531,9 +819,9 @@
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1050,
+        width: 1600,
 
-        height: 700,
+        height: 900,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,

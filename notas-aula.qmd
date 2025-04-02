@@ -1,5 +1,5 @@
 ---
-title: "Aula 2 - Modelos lineares com regularização para regressão"
+title: "Modelos lineares com regularização para regressão"
 author: "Magno Severino"
 format: html
 title-block-banner: "#002060"
@@ -36,6 +36,8 @@ cores <- RColorBrewer::brewer.pal(5, "Dark2")
 
 ## Motivação
 
+## Trade-off entre viés e variância
+
 ## Modelo Regressão linear
 
 Considere que observamos o par $(x_i, y_i),$ em que $x_i \in \mathbb R^p,$ para $i \in \{1, \dots, n\}$ e $0 < p \in \mathbb N$ e há uma crença de que exista uma relação linear entre as preditoras e a variável resposta.
@@ -60,8 +62,6 @@ $$
 \beta = (\beta_0, \beta_1, \dots, \beta_d) = (X^T X)^{-1} X^T Y,
 $$
 
-em que
-
 $$
 X = \begin{pmatrix}
 X_{1,0} & \dots & X_{1,d} \\
@@ -84,13 +84,32 @@ Se $d > n$, o método de mínimos quadrados nem pode ser implementado, uma vez q
 
 Entretanto, o modelo linear tem algumas vantagens em termos de infência, e em termos de problemas reais aplicados, em alguns casos, é competitivo em relação a métodos não lineares (como árvore de decisão binária, por exemplo).
 
+Na aula de hoje, vamos discutir formar de melhorar o modelo de regressão linear, superando algumas de suas limitações:
+
+- Melhoria na acurácia de predição: sob a hipótese de que a verdadeira relação entre a resposta e as preditoras é aproximadamente linear, as estimativas de minimos quadrados tem viés baixo. 
+
+  - Se $n \gg p,$ as estimativas de mínimos quadrados tendem a ter também baixa variância, performando bem em dados de teste.
+  
+  - Se $n$ não for muito maior que $p$, há o risco de variância alta no ajuste, resultado em overfitting. Resultado: baixo poder preditivo.
+
+- Alternativa: limitar ou encolher (_shrinkking_) os coeficientes estimados para reduzir a variância, ao custo de aumentar um pouco o viés das estimativas. Isso pode levar a uma grande melhoria no poder preditivo do modelo.
+
 ## Seleção de variáveis
+
+Essa abordagem involve identificar um subconjunto das $p$ preditoras que acredita-se ter uma relação com a variável resposta. 
+O modelo é ajustado então considerando este conjunto reduzido de preditoras.
+Problema: computacionalmente muito custoso.
+
+Alternativas: stepwise.
 
 ## Métodos de encolhimento (_shrinkage_)
 
-### Regressão Ridge
+Como alternativa aos métodos de seleção de modelos convencionais, consideramos duas versões que buscam encolher as estimativas para próximo de zero.
+Ao fazer essa redução, reduzimos a variância dos modelos. 
 
 ### Regressão Ridge
+
+### Regressão Lasso
 
 ### Seleção do hiperparametro de penalização $\lambda$
 
