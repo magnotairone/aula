@@ -438,6 +438,31 @@ g1+geom_abline(intercept = -2, slope=c(-1.7, 0.9, 1.8, 0.3, -0.9, -1.3), col="bl
    geom_abline(intercept = -2, slope=5, col="black", size=1.2)
 ```
 
+
+## Ridge: intuição
+
+Considere o cenário em que temos duas preditoras $X_1$ e $X_2$.
+
+<br>
+
+![](ridge.png)
+
+## Ridge: intuição
+
+Considere o cenário em que temos duas preditoras $X_1$ e $X_2$.
+
+<br>
+
+![](ridge2.png)
+
+## Ridge: intuição
+
+Considere o cenário em que temos duas preditoras $X_1$ e $X_2$.
+
+<br>
+
+![](ridge3.png)
+
 ## Estimativas Ridge vs mínimos quadrados {.smaller}
 
 ```{r cache=TRUE}
@@ -479,16 +504,9 @@ g1 + g2
 ```
 
 $$
-\mathcal{G} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2\}, \qquad \mathcal{G}_{\ell_2} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2, |\beta_1|_2^2<s\}.
+\mathcal{G} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2\}, \qquad \mathcal{G}_{\ell_2} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2, (\beta_1)^2<s\}.
 $$
 
-## Ridge: intuição
-
-Considere o cenário em que temos duas preditoras $X_1$ e $X_2$.
-
-<br>
-
-![](ridge.png)
 
 ## Ridge: trade-off entre viés e variância
 
@@ -562,6 +580,15 @@ Considere o cenário em que temos duas preditoras $X_1$ e $X_2$.
 
 ![](lasso.png)
 
+## Lasso: intuição
+
+<br>
+Considere o cenário em que temos duas preditoras $X_1$ e $X_2$.
+
+<br>
+
+![](lasso2.png)
+
 ## Lasso: propriedades
 
 - O estimador Lasso **encolhe para zero** os parâmetros que correspondem a preditores redundantes.
@@ -618,6 +645,8 @@ onde $\lambda$ controla a força da penalização e $\alpha$ é o parâmetro que
 
 ![](elastic-net.png)
 
+$\alpha = 1/2$
+
 ::: footer
 Figura do livro Morettin, Pedro A., and Julio M. Singer. "Introduçao a Ciência de Dados." Introdução à Ciência de Dados: Fundamentos e Aplicações (2020).
 :::
@@ -642,3 +671,11 @@ Figura do livro Morettin, Pedro A., and Julio M. Singer. "Introduçao a Ciência
      
 3. O $\lambda$ ótimo ($\lambda^*$) minimiza o EQM médio:
    $$\lambda^* = \arg\min_{\lambda} \frac{1}{k} \sum_{j=1}^k \text{EQM}_j(\lambda).$$
+   
+## Escolha do hiperparametro de penalização $\lambda$ {.smaller} 
+
+::: {layout-ncol=2}
+![](lambda_lasso.png)
+
+![](lasso-regression-1.png)
+:::

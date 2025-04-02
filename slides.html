@@ -504,19 +504,31 @@ Y = g(X) + \varepsilon,
 </ul>
 
 <img data-src="slides_files/figure-revealjs/unnamed-chunk-9-1.png" style="width:100.0%" class="r-stretch quarto-figure-center"></section>
-<section id="estimativas-ridge-vs-mínimos-quadrados" class="slide level2 smaller">
-<h2>Estimativas Ridge vs mínimos quadrados</h2>
-
-<img data-src="slides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"><p><span class="math display">\[
-\mathcal{G} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2\}, \qquad \mathcal{G}_{\ell_2} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2, |\beta_1|_2^2&lt;s\}.
-\]</span></p>
-</section>
 <section id="ridge-intuição" class="slide level2">
 <h2>Ridge: intuição</h2>
 <p>Considere o cenário em que temos duas preditoras <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span>.</p>
 <p><br></p>
 
 <img data-src="ridge.png" class="r-stretch"></section>
+<section id="ridge-intuição-1" class="slide level2">
+<h2>Ridge: intuição</h2>
+<p>Considere o cenário em que temos duas preditoras <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span>.</p>
+<p><br></p>
+
+<img data-src="ridge2.png" class="r-stretch"></section>
+<section id="ridge-intuição-2" class="slide level2">
+<h2>Ridge: intuição</h2>
+<p>Considere o cenário em que temos duas preditoras <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span>.</p>
+<p><br></p>
+
+<img data-src="ridge3.png" class="r-stretch"></section>
+<section id="estimativas-ridge-vs-mínimos-quadrados" class="slide level2 smaller">
+<h2>Estimativas Ridge vs mínimos quadrados</h2>
+
+<img data-src="slides_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"><p><span class="math display">\[
+\mathcal{G} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2\}, \qquad \mathcal{G}_{\ell_2} = \{g(x)=\beta_0+\beta_1x:(\beta_0,\beta_1)\in\mathbb{R}^2, (\beta_1)^2&lt;s\}.
+\]</span></p>
+</section>
 <section id="ridge-trade-off-entre-viés-e-variância" class="slide level2">
 <h2>Ridge: trade-off entre viés e variância</h2>
 <p>Quando <span class="math inline">\(\lambda\)</span> cresce, a flexibilidade da regressão ridge diminui, levando à diminuição na variância e aumento do viés.</p>
@@ -572,6 +584,12 @@ Y = g(X) + \varepsilon,
 <p><br></p>
 
 <img data-src="lasso.png" class="r-stretch"></section>
+<section id="lasso-intuição-1" class="slide level2">
+<h2>Lasso: intuição</h2>
+<p><br> Considere o cenário em que temos duas preditoras <span class="math inline">\(X_1\)</span> e <span class="math inline">\(X_2\)</span>.</p>
+<p><br></p>
+
+<img data-src="lasso2.png" class="r-stretch"></section>
 <section id="lasso-propriedades" class="slide level2">
 <h2>Lasso: propriedades</h2>
 <ul>
@@ -616,7 +634,8 @@ Y = g(X) + \varepsilon,
 <section id="elastic-net" class="slide level2">
 <h2>Elastic-net</h2>
 
-<img data-src="elastic-net.png" class="r-stretch"><div class="footer">
+<img data-src="elastic-net.png" class="r-stretch"><p><span class="math inline">\(\alpha = 1/2\)</span></p>
+<div class="footer">
 <p>Figura do livro Morettin, Pedro A., and Julio M. Singer. “Introduçao a Ciência de Dados.” Introdução à Ciência de Dados: Fundamentos e Aplicações (2020).</p>
 </div>
 </section>
@@ -638,6 +657,19 @@ Y = g(X) + \varepsilon,
 </ul></li>
 <li>O <span class="math inline">\(\lambda\)</span> ótimo (<span class="math inline">\(\lambda^*\)</span>) minimiza o EQM médio: <span class="math display">\[\lambda^* = \arg\min_{\lambda} \frac{1}{k} \sum_{j=1}^k \text{EQM}_j(\lambda).\]</span></li>
 </ol>
+</section>
+<section id="escolha-do-hiperparametro-de-penalização-lambda-1" class="slide level2 smaller">
+<h2>Escolha do hiperparametro de penalização <span class="math inline">\(\lambda\)</span></h2>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="lambda_lasso.png"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="lasso-regression-1.png"></p>
+</div>
+</div>
+</div>
 <div class="footer footer-default">
 
 </div>
